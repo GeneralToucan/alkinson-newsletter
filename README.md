@@ -35,7 +35,7 @@ Secondly, the email agent will then orchestrate sending weekly emails using AWS 
 
 ## **Accomplishments**
 
-- Kiro massively assisted with developing and completing the project. It was efficient, quickened the development process and was a great opportunity to expand knowledge.
+- I gained invaluable experience in Kiro, which massively assisted with developing and completing the project. It was efficient, quickened the development process and was a great opportunity to expand knowledge.
 - Developing multiple AI agents that interact with each other and other AWS Services via Lambda functions.
 
 
