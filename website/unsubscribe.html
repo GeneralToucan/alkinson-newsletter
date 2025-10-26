@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsubscribe - Alkinson's Newsletter</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Alkinson's Newsletter</h1>
+        <p>Unsubscribe from weekly updates</p>
+    </header>
+    
+    <main>
+        <section id="unsubscribe-section">
+            <h2>Unsubscribe</h2>
+            <p>We're sorry to see you go. You can unsubscribe from our newsletter below.</p>
+            
+            <form id="unsubscribe-form">
+                <input type="email" id="email" placeholder="Enter your email" required>
+                <button type="submit">Unsubscribe</button>
+            </form>
+            
+            <div id="unsubscribe-message"></div>
+            
+            <div id="success-message" style="display: none;">
+                <h3>Successfully Unsubscribed</h3>
+                <p>You have been successfully unsubscribed from Alkinson's Newsletter.</p>
+                <p>You will no longer receive weekly updates.</p>
+                <p><a href="index.html">Return to homepage</a> if you'd like to subscribe again in the future.</p>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if email and token are in URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            const token = urlParams.get('token');
+            
+            if (email && token) {
+                // Auto-unsubscribe with token
+                autoUnsubscribe(email, token);
+            } else {
+                // Show manual unsubscribe form
+                setupUnsubscribeForm();
+            }
+        });
+        
+        async function autoUnsubscribe(email, token) {
+            try {
+                const response = await fetch('https://blhnosygd6.execute-api.ap-southeast-2.amazonaws.com/prod/api/unsubscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email, token: token })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('unsubscribe-section').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    document.getElementById('unsubscribe-message').innerHTML = 
+                        '<p style="color: red;">Unsubscribe failed. Please try the manual form below.</p>';
+                }
+            } catch (error) {
+                document.getElementById('unsubscribe-message').innerHTML = 
+                    '<p style="color: red;">Network error. Please try the manual form below.</p>';
+            }
+        }
+        
+        function setupUnsubscribeForm() {
+            const form = document.getElementById('unsubscribe-form');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const messageDiv = document.getElementById('unsubscribe-message');
+                
+                try {
+                    const response = await fetch('https://blhnosygd6.execute-api.ap-southeast-2.amazonaws.com/prod/api/unsubscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email: email })
+                    });
+                    
+                    if (response.ok) {
+                        document.getElementById('unsubscribe-section').style.display = 'none';
+                        document.getElementById('success-message').style.display = 'block';
+                    } else {
+                        messageDiv.innerHTML = '<p style="color: red;">Unsubscribe failed. Please check your email address.</p>';
+                    }
+                } catch (error) {
+                    messageDiv.innerHTML = '<p style="color: red;">Network error. Please try again.</p>';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

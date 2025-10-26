@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Subscription - Alkinson's Newsletter</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Alkinson's Newsletter</h1>
+        <p>Confirm your subscription</p>
+    </header>
+    
+    <main>
+        <section id="confirm-section">
+            <h2>Confirming Your Subscription...</h2>
+            <div id="loading-message">
+                <p>Please wait while we confirm your subscription.</p>
+            </div>
+            
+            <div id="success-message" style="display: none;">
+                <h3>✓ Subscription Confirmed!</h3>
+                <p>Thank you for confirming your subscription to Alkinson's Newsletter.</p>
+                <p>You will now receive weekly updates about Alzheimer's and Parkinson's disease research.</p>
+                <p><a href="index.html" class="button">Go to Homepage</a></p>
+            </div>
+            
+            <div id="error-message" style="display: none;">
+                <h3>Confirmation Failed</h3>
+                <p id="error-text"></p>
+                <p><a href="index.html">Return to homepage</a> to try subscribing again.</p>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            const token = urlParams.get('token');
+            
+            if (!email || !token) {
+                showError('Invalid confirmation link. Please check your email and try again.');
+                return;
+            }
+            
+            confirmSubscription(email, token);
+        });
+        
+        async function confirmSubscription(email, token) {
+            try {
+                const apiUrl = 'https://blhnosygd6.execute-api.ap-southeast-2.amazonaws.com/prod/api/confirm';
+                
+                const response = await fetch(`${apiUrl}?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess();
+                } else {
+                    showError(data.error || 'Confirmation failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Confirmation error:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        }
+        
+        function showSuccess() {
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('success-message').style.display = 'block';
+        }
+        
+        function showError(message) {
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('error-text').textContent = message;
+        }
+    </script>
+    
+    <style>
+        #confirm-section {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        #loading-message {
+            padding: 2rem;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        #success-message {
+            padding: 2rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            color: #155724;
+        }
+        
+        #success-message h3 {
+            color: #155724;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        #error-message {
+            padding: 2rem;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            color: #721c24;
+        }
+        
+        #error-message h3 {
+            color: #721c24;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</body>
+</html>
